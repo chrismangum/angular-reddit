@@ -1,0 +1,6 @@
+*.swp
+*.min.js
+*.min.css
+
+public/vendor
+node_modules
