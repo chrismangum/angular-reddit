@@ -2,7 +2,7 @@ var app = angular.module('app', ['ngRoute']);
 
 app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
   $routeProvider.when('/r/:subreddit', {
-    templateUrl: 'layout.html',
+    templateUrl: 'layouts/posts.html',
     controller: 'rbCtrl'
   });
 }]);
