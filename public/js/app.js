@@ -7,42 +7,54 @@ app.config(['$routeProvider', function ($routeProvider) {
   });
 }]);
 
-app.controller('rbCtrl', ['$scope', '$httpBackend', '$routeParams', 'jQuery', function ($scope, $httpBackend, $routeParams, $) {
-  $scope.data = '';
+app.controller('rbCtrl', [
+  '$scope',
+  '$httpBackend',
+  '$routeParams',
+  'jQuery',
+  function ($scope, $httpBackend, $routeParams, $) {
+    $scope.data = '';
 
-  function parseData(data) {
-    var i, max;
-    data = angular.fromJson(data).data.children;
-    for (i = 0, max = data.length; i < max; i += 1) {
-      data[i] = data[i].data;
+    function parseData(data) {
+      var i, max;
+      data = angular.fromJson(data).data.children;
+      for (i = 0, max = data.length; i < max; i += 1) {
+        data[i] = data[i].data;
+      }
+      return data;
     }
-    return data;
-  }
 
-  function buildUrl(params) {
-    var url = 'http://www.reddit.com/r/';
-    url += params.subreddit;
-    url += params.thread ? '/' + params.thread : '';
-    url += params.sort ? '/' + params.sort : '';
+    function buildUrl(params) {
+      var url = 'http://www.reddit.com/r/';
+      url += params.subreddit;
+      url += params.thread ? '/' + params.thread : '';
+      url += params.sort ? '/' + params.sort : '';
 
-    delete params.subreddit;
-    delete params.thread
+      delete params.subreddit;
+      delete params.thread
 
-    params.limit = 1000;
-    url += '.json?';
-    return url + $.param(params);
-  }
+      params.limit = 1000;
+      url += '.json?';
+      return url + $.param(params);
+    }
 
-  function getData(params) {
-    var url = buildUrl(params);
-    $httpBackend('GET', url, null, function (status, data) {
+    $httpBackend('GET', buildUrl($routeParams), null, function (status, data) {
       $scope.data = parseData(data);
       $scope.$apply();
     });
   }
-  getData($routeParams);
+]);
+
+app.filter('timeago', ['moment', function (moment) {
+  return function (timestamp) {
+    return moment(timestamp * 1000).fromNow();
+  };
 }]);
 
-app.factory('jQuery', function() {
+app.factory('moment', function () {
+  return moment;
+});
+
+app.factory('jQuery', function () {
   return jQuery;
 });

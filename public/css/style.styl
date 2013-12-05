@@ -5,9 +5,27 @@
 
 .post
   border-bottom: 1px dashed #ccc
+  &:focus
+    background: #ddd
   &:last-child
     border-bottom: 0
   td
     padding: 5px
   .points
     text-align: right
+  .comments
+    a
+      position: relative
+    .glyphicon
+      font-size: 27px
+      vertical-align: middle
+    .count
+      position: absolute
+      color: #fff
+      font-size: 10px
+      left: 0
+      top: 0
+      right: 2px
+      text-align: center
+      
+

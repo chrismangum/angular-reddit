@@ -2,8 +2,10 @@
   <table>
     <tr class="post" ng-repeat="post in data">
       <td class="points">{{post.score}}</td>
-      <td class="title"><a ng-href="{{post.url}}" target="_blank">{{post.title}}</a></td>
-      <td class="comments"><a ng-href="/#{{post.permalink}}"><span class="glyphicon glyphicon-comment"></span></a></td>
+      <td class="title">
+        <a ng-href="{{post.url}}" target="_blank">{{post.title}}</a><br>
+        <small><a ng-href="http://reddit.com{{post.permalink}}" target="_blank">{{post.num_comments}} Comments</a> | {{post.created_utc | timeago}}</small>
+      </td>
     </div>
   </table>
 </div>
