@@ -1,6 +1,6 @@
 var app = angular.module('app', ['ngRoute']);
 
-app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
+app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/r/:subreddit', {
     templateUrl: 'layouts/posts.html',
     controller: 'rbCtrl'
@@ -10,7 +10,7 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
 app.controller('rbCtrl', ['$scope', '$httpBackend', '$routeParams', 'jQuery', function ($scope, $httpBackend, $routeParams, $) {
   $scope.data = '';
 
-  function parse(data) {
+  function parseData(data) {
     var i, max;
     data = angular.fromJson(data).data.children;
     for (i = 0, max = data.length; i < max; i += 1) {
@@ -19,7 +19,7 @@ app.controller('rbCtrl', ['$scope', '$httpBackend', '$routeParams', 'jQuery', fu
     return data;
   }
 
-  function getData(params) {
+  function buildUrl(params) {
     var url = 'http://www.reddit.com/r/';
     url += params.subreddit;
     url += params.thread ? '/' + params.thread : '';
@@ -30,9 +30,13 @@ app.controller('rbCtrl', ['$scope', '$httpBackend', '$routeParams', 'jQuery', fu
 
     params.limit = 1000;
     url += '.json?';
-    url += $.param(params);
+    return url + $.param(params);
+  }
+
+  function getData(params) {
+    var url = buildUrl(params);
     $httpBackend('GET', url, null, function (status, data) {
-      $scope.data = parse(data);
+      $scope.data = parseData(data);
       $scope.$apply();
     });
   }
