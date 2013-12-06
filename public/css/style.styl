@@ -3,16 +3,32 @@
 .aright
   text-align: right
 
+.full
+  width: 100%
+
 .main
   margin: 20px auto
-  table
-    width: 100%
+  > .row
+    background: #f6f6f6
+    padding: 10px 20px
 
-.post
-  border-bottom: 1px dashed #ccc
-  &:last-child
-    border-bottom: 0
-  td
-    padding: 5px
-    .info
+.posts
+  width: 100%
+  .post
+    border-bottom: 1px dashed #ccc
+    &:last-child
+      border-bottom: 0
+    td
+      padding: 5px
+      .info
+        font-size: 11px
+
+.comments
+  border-top: 1px dashed #ccc
+  .comment
+    margin: 20px 0 0 20px
+    &.top-level
+      margin-left: 0
+    .title
       font-size: 11px
+    
