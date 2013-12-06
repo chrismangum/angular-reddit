@@ -27,7 +27,7 @@ app.controller('rbCtrl', [
     function buildUrl(params) {
       var url = 'http://www.reddit.com/r/';
       url += params.subreddit;
-      url += params.thread ? '/' + params.thread : '';
+      url += params.thread ? '/comments/' + params.thread : '';
       url += params.sort ? '/' + params.sort : '';
 
       delete params.subreddit;
