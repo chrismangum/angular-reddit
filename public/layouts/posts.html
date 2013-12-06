@@ -4,7 +4,7 @@
       <td class="aright">{{post.score}}</td>
       <td class="full">
         <div class="title"><a ng-href="{{post.url}}" target="_blank">{{post.title}}</a></div>
-        <div class="info"><a ng-href="/#{{post.permalink}}">{{post.num_comments}} Comments</a> | {{post.created_utc | timeago}}</div>
+        <div class="info"><a ng-href="/#{{post.permalink}}">{{post.num_comments}} Comments</a> | {{post.created_utc | timeago}} by {{post.author}}</div>
       </td>
     </tr>
   </table>
