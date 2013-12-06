@@ -20,6 +20,8 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', function ($scope, h
       unstripped = unstripped.data.children;
       for (i = 0, max = unstripped.length; i < max; i += 1) {
         stripped[i] = unstripped[i].data;
+        //add score, since reddit omits it:
+        stripped[i].score = stripped[i].ups - stripped[i].downs
         if (typeof stripped[i].replies === 'object') {
           stripped[i].replies = stripLayers(stripped[i].replies);
         }

@@ -10,19 +10,29 @@
   </table>
 
   <div class="comments" ng-if="comments.length">
-    <div class="top-level comment" ng-repeat="comment in comments">
-      <div class="title">{{comment.author}} | {{comment.ups - comment.downs}} points | {{comment.created_utc | timeago}}</div>
-      <div class="description">{{comment.body}}</div>
-      <div ng-include="'tree_comment.html'" ng-if="comment.replies.length"></div>
+    <div class="top-level comment" ng-repeat="comment in comments" ng-init="show = true">
+      <div class="title">
+        <a ng-click="show = !show">[{{show && '&ndash;' || '+'}}]</a>
+        {{comment.author}} &bull;
+        {{comment.score}} point{{comment.score !== 1 && 's' || ''}} &bull;
+        {{comment.created_utc | timeago}}
+      </div>
+      <div class="description" ng-show="show">{{comment.body}}</div>
+      <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show"></div>
     </div>
   </div>
 </div>
 
 <script type="text/ng-template"  id="tree_comment.html">
-  <div class="comment" ng-repeat="comment in comment.replies">
-    <div class="title">{{comment.author}} | {{comment.ups - comment.downs}} points | {{comment.created_utc | timeago}}</div>
-    <div class="description">{{comment.body}}</div>
-    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length"></div>
+  <div class="comment" ng-repeat="comment in comment.replies" ng-init="show = true">
+    <div class="title">
+      <a ng-click="show = !show">[{{show && '&ndash;' || '+'}}]</a>
+      {{comment.author}} &bull;
+      {{comment.score}} point{{comment.score !== 1 && 's' || ''}} &bull;
+      {{comment.created_utc | timeago}}
+    </div>
+    <div class="description" ng-show="show">{{comment.body}}</div>
+    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show"></div>
   </div>
 </script>
 
