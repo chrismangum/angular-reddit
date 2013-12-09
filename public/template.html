@@ -19,7 +19,7 @@
       {{comment.score}} point{{comment.score !== 1 && 's' || ''}} &bull;
       {{comment.created_utc | timeago}}
     </div>
-    <div class="description" ng-show="show">{{comment.body}}</div>
+    <div class="description" ng-bind-html="parseHtml(comment.body_html)" ng-show="show"></div>
     <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show" ng-init="comments = comment.replies"></div>
   </div>
 </script>

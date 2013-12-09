@@ -11,7 +11,8 @@ app.config(['$routeProvider', function ($routeProvider) {
   });
 }]);
 
-app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', function ($scope, http, $routeParams) {
+app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($scope, http, $routeParams, $sce) {
+    var dummyEl = document.createElement('div');
     $scope.posts = [];
     $scope.comments = [];
 
@@ -43,6 +44,15 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', function ($scope, h
         data[i] = data[i].data;
       }
       $scope.posts = data;
+    }
+
+    $scope.parseHtml = function (str) {
+      if (str && typeof str === 'string') {
+        dummyEl.innerHTML = str;
+        str = dummyEl.textContent;
+        dummyEl.textContent = '';
+      }
+      return $sce.trustAsHtml(str);
     }
 
     http.get(function (data) {
