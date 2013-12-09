@@ -16,7 +16,7 @@
   <div class="comment" ng-repeat="comment in comments" ng-init="show = true">
     <div class="title">
       <a ng-click="show = !show">[{{show && '&ndash;' || '+'}}]</a>
-      {{comment.author}} &bull;
+      <span ng-class="{'is-author': posts[0].author === comment.author}">{{comment.author}}</span> &bull;
       {{comment.score}} point{{comment.score !== 1 && 's' || ''}} &bull;
       {{comment.created_utc | timeago}}
     </div>
