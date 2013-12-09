@@ -46,13 +46,11 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
       $scope.posts = data;
     }
 
-    $scope.parseHtml = function (str) {
-      if (str && typeof str === 'string') {
-        dummyEl.innerHTML = str;
-        str = dummyEl.textContent;
-        dummyEl.textContent = '';
-      }
-      return $sce.trustAsHtml(str);
+    $scope.parseHtml = function (body_html) {
+      dummyEl.innerHTML = body_html;
+      body_html = dummyEl.textContent;
+      dummyEl.textContent = '';
+      return $sce.trustAsHtml(body_html);
     }
 
     http.get(function (data) {
