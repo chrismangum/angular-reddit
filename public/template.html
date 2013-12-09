@@ -8,6 +8,7 @@
       </td>
     </tr>
   </table>
+  <div class="selftext" ng-if="comments.length" ng-bind-html="parseHtml(posts[0].selftext_html)"></div>
   <div class="comments" ng-if="comments.length" ng-include="'tree_comment.html'"></div>
 </div>
 
