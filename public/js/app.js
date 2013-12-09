@@ -2,11 +2,11 @@ var app = angular.module('app', ['ngRoute']);
 
 app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/r/:subreddit', {
-    templateUrl: 'layouts/posts.html',
+    templateUrl: 'template.html',
     controller: 'rdtCtrl'
   });
   $routeProvider.when('/r/:subreddit/comments/:thread/:title', {
-    templateUrl: 'layouts/posts.html',
+    templateUrl: 'template.html',
     controller: 'rdtCtrl'
   });
 }]);

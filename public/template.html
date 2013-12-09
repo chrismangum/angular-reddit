@@ -8,23 +8,11 @@
       </td>
     </tr>
   </table>
-
-  <div class="comments" ng-if="comments.length">
-    <div class="top-level comment" ng-repeat="comment in comments" ng-init="show = true">
-      <div class="title">
-        <a ng-click="show = !show">[{{show && '&ndash;' || '+'}}]</a>
-        {{comment.author}} &bull;
-        {{comment.score}} point{{comment.score !== 1 && 's' || ''}} &bull;
-        {{comment.created_utc | timeago}}
-      </div>
-      <div class="description" ng-show="show">{{comment.body}}</div>
-      <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show"></div>
-    </div>
-  </div>
+  <div class="comments" ng-if="comments.length" ng-include="'tree_comment.html'"></div>
 </div>
 
 <script type="text/ng-template"  id="tree_comment.html">
-  <div class="comment" ng-repeat="comment in comment.replies" ng-init="show = true">
+  <div class="comment" ng-repeat="comment in comments" ng-init="show = true">
     <div class="title">
       <a ng-click="show = !show">[{{show && '&ndash;' || '+'}}]</a>
       {{comment.author}} &bull;
@@ -32,7 +20,7 @@
       {{comment.created_utc | timeago}}
     </div>
     <div class="description" ng-show="show">{{comment.body}}</div>
-    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show"></div>
+    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show" ng-init="comments = comment.replies"></div>
   </div>
 </script>
 
