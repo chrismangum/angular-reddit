@@ -9,7 +9,7 @@
     </tr>
   </table>
   <div class="selftext" ng-if="comments.length" ng-bind-html="parseHtml(posts[0].selftext_html)"></div>
-  <div class="comments" ng-if="comments.length" ng-include="'tree_comment.html'"></div>
+  <div class="comments" ng-if="comments.length" ng-include="'tree_comment.html'" ng-class="{noSelfText: !posts[0].selftext_html.length}"></div>
 </div>
 
 <script type="text/ng-template"  id="tree_comment.html">
