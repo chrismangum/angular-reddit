@@ -35,7 +35,6 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
     }
 
     function parseCData(data) {
-      var i, max;
       data = angular.fromJson(data);
       $scope.posts = [data[0].data.children[0].data];
       $scope.comments = stripLayers(data[1]);
@@ -55,7 +54,7 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
       body_html = dummyEl.textContent;
       dummyEl.textContent = '';
       return $sce.trustAsHtml(body_html);
-    }
+    };
 
     http.get(function (data) {
       if ($routeParams.thread) {
@@ -83,7 +82,7 @@ app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBa
     url += params.sort ? '/' + params.sort : '';
 
     delete params.subreddit;
-    delete params.thread
+    delete params.thread;
 
     params.limit = 1000;
     url += '.json?';
@@ -95,7 +94,7 @@ app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBa
         callback(data);
       });
     }
-  }
+  };
 }]);
 
 app.factory('moment', function () {
