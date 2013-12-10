@@ -16,15 +16,19 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
     $scope.posts = [];
     $scope.comments = [];
 
-    function stripLayers(unstripped) {
+    function stripLayers(unstripped, level) {
       var i, max, stripped = [];
+      level = level || 1;
       unstripped = unstripped.data.children;
       for (i = 0, max = unstripped.length; i < max; i += 1) {
         stripped[i] = unstripped[i].data;
         //add score, since reddit omits it:
-        stripped[i].score = stripped[i].ups - stripped[i].downs
+        stripped[i].score = stripped[i].ups - stripped[i].downs;
         if (typeof stripped[i].replies === 'object') {
-          stripped[i].replies = stripLayers(stripped[i].replies);
+          if (level === 9) {
+            stripped[i].more = true;
+          }
+          stripped[i].replies = stripLayers(stripped[i].replies, level + 1);
         }
       }
       return stripped;

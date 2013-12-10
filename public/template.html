@@ -1,7 +1,7 @@
-<div class="loading" ng-show="!posts.length">
+<div class="loading" ng-if="!posts.length">
   <img src="images/loading.gif">
 </div>
-<div class="row" ng-show="posts.length">
+<div class="row" ng-if="posts.length">
   <table class="posts">
     <tr class="post" ng-repeat="post in posts">
       <td class="aright">{{post.score}}</td>
@@ -24,7 +24,8 @@
       {{comment.created_utc | timeago}}
     </div>
     <div class="description" ng-bind-html="parseHtml(comment.body_html)" ng-show="show"></div>
-    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length" ng-show="show" ng-init="comments = comment.replies"></div>
+    <a ng-if="comment.more" ng-show="show" ng-click="comment.more = false">Load more comments...</a>
+    <div ng-include="'tree_comment.html'" ng-if="comment.replies.length && !comment.more" ng-show="show" ng-init="comments = comment.replies"></div>
   </div>
 </script>
 
