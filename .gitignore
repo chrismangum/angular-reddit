@@ -1,7 +1,7 @@
 *.swp
-*.css
 *.min.js
 
+public/css/*.css
 public/vendor
 public/index.html
 node_modules

@@ -11,6 +11,21 @@ app.config(['$routeProvider', function ($routeProvider) {
   });
 }]);
 
+app.controller('nav', ['$scope', 'jQuery', function ($scope, $) {
+  var $theme = $('.theme');
+  $scope.themes = [{
+      name: 'Default',
+      src: '/css/bootstrap-themes/default.min.css'
+    }, {
+      name: 'Slate',
+      src: '/css/bootstrap-themes/slate.min.css'
+    }
+  ];
+  $scope.setStyle = function(theme) {
+    $theme.attr('href', theme.src);
+  };
+}]);
+
 app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($scope, http, $routeParams, $sce) {
     var dummyEl = document.createElement('div');
     $scope.posts = [];
@@ -38,6 +53,7 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
       data = angular.fromJson(data);
       $scope.posts = [data[0].data.children[0].data];
       $scope.comments = stripLayers(data[1]);
+      document.title = $scope.posts[0].title;
     }
 
     function parsePData(data) {
@@ -47,6 +63,7 @@ app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($
         data[i] = data[i].data;
       }
       $scope.posts = data;
+      document.title = 'r/' + $routeParams.subreddit;
     }
 
     $scope.parseHtml = function (body_html) {
