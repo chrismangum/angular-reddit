@@ -14,11 +14,20 @@ app.config(['$routeProvider', function ($routeProvider) {
 app.controller('nav', ['$scope', 'jQuery', function ($scope, $) {
   var $theme = $('.theme');
   $scope.themes = [{
+      name: 'Amelia',
+      src: '/css/bootstrap-themes/amelia.min.css'
+    }, {
+      name: 'Cyborg',
+      src: '/css/bootstrap-themes/cyborg.min.css'
+    }, {
       name: 'Default',
       src: '/css/bootstrap-themes/default.min.css'
     }, {
       name: 'Slate',
       src: '/css/bootstrap-themes/slate.min.css'
+    }, {
+      name: 'Yeti',
+      src: '/css/bootstrap-themes/yeti.min.css'
     }
   ];
   $scope.setStyle = function(theme) {
