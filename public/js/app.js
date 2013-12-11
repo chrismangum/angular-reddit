@@ -13,12 +13,18 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 app.controller('nav', ['$scope', 'jQuery', function ($scope, $) {
   var $theme = $('.theme');
+  var $body = $(document.body);
   $scope.themes = [{
       name: 'Amelia',
       src: '/css/bootstrap-themes/amelia.min.css'
     }, {
       name: 'Cyborg',
-      src: '/css/bootstrap-themes/cyborg.min.css'
+      src: '/css/bootstrap-themes/cyborg.min.css',
+      overrides: {
+        color: '#babdb6',
+        'font-family': 'MonacoB2, Monaco, sans-serif',
+        'font-size': '13px'
+      }
     }, {
       name: 'Default',
       src: '/css/bootstrap-themes/default.min.css'
@@ -30,9 +36,18 @@ app.controller('nav', ['$scope', 'jQuery', function ($scope, $) {
       src: '/css/bootstrap-themes/yeti.min.css'
     }
   ];
-  $scope.setStyle = function(theme) {
+  $scope.setTheme = function(theme) {
+    $body.removeAttr('style');
     $theme.attr('href', theme.src);
+    if (theme.overrides) {
+      for (i in theme.overrides) {
+        if (theme.overrides.hasOwnProperty(i)) {
+          $body.css(i, theme.overrides[i]);
+        }
+      }
+    }
   };
+  $scope.setTheme($scope.themes[1]);
 }]);
 
 app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($scope, http, $routeParams, $sce) {

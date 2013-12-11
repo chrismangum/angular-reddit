@@ -2,7 +2,7 @@ doctype 5
 html
   head
     title=Testing
-    link.theme(rel="stylesheet", href="/css/bootstrap-themes/slate.min.css")
+    link.theme(rel="stylesheet")
     link(rel='stylesheet', href='/css/style.min.css')
   body(ng-app="app")
     .navbar.navbar-default.navbar-fixed-top(ng-controller="nav")
@@ -21,7 +21,7 @@ html
                 span.caret
               ul.dropdown-menu
                 li(ng-repeat="theme in themes")
-                  a(tabindex='-1', ng-click="setStyle(theme)") {{theme.name}}
+                  a(tabindex='-1', ng-click="setTheme(theme)") {{theme.name}}
     .container.main(ng-view)
     script(src="/vendor/jquery/jquery.min.js")
     script(src="/vendor/angular/angular.js")
