@@ -3,98 +3,89 @@ var app = angular.module('app', ['ngRoute']);
 app.config(['$routeProvider', function ($routeProvider) {
   $routeProvider.when('/r/:subreddit', {
     templateUrl: 'template.html',
-    controller: 'rdtCtrl'
+    controller: 'tmpCtrl'
   });
   $routeProvider.when('/r/:subreddit/comments/:thread/:title', {
     templateUrl: 'template.html',
-    controller: 'rdtCtrl'
+    controller: 'tmpCtrl'
   });
 }]);
 
-app.controller('nav', ['$scope', 'jQuery', function ($scope, $) {
+app.controller('mainCtrl', ['$scope', 'jQuery', 'localStorage', '$sce', function ($scope, $, storage, $sce) {
   var $theme = $('.theme');
   var $body = $(document.body);
-  $scope.themes = [{
-      name: 'Amelia',
-      src: '/css/bootstrap-themes/amelia.min.css'
-    }, {
-      name: 'Cyborg',
-      src: '/css/bootstrap-themes/cyborg.min.css'
-    }, {
-      name: 'Default',
-      src: '/css/bootstrap-themes/default.min.css'
-    }, {
-      name: 'Slate',
-      src: '/css/bootstrap-themes/slate.min.css'
-    }, {
-      name: 'Yeti',
-      src: '/css/bootstrap-themes/yeti.min.css'
-    }
-  ];
-  $scope.setTheme = function(theme) {
-    $theme.attr('href', theme.src);
-    $body.attr('id', theme.name);
+  var dummyEl = document.createElement('div');
+
+  $scope.parseHtml = function (body_html) {
+    dummyEl.innerHTML = body_html;
+    body_html = dummyEl.textContent;
+    dummyEl.textContent = '';
+    return $sce.trustAsHtml(body_html);
   };
-  $scope.setTheme($scope.themes[1]);
+  $scope.themes = {
+    'Amelia': '/css/bootstrap-themes/amelia.min.css',
+    'Cyborg': '/css/bootstrap-themes/cyborg.min.css',
+    'Default': '/css/bootstrap-themes/default.min.css',
+    'Slate': '/css/bootstrap-themes/slate.min.css',
+    'Yeti': '/css/bootstrap-themes/yeti.min.css'
+  };
+  $scope.setTheme = function(name) {
+    storage.theme = name;
+    $theme.attr('href', $scope.themes[name]);
+    $body.attr('id', name);
+  };
+  if (!storage.theme) {
+    storage.theme = 'Cyborg';
+  }
+  $scope.setTheme(storage.theme);
 }]);
 
-app.controller('rdtCtrl', ['$scope', 'http', '$routeParams', '$sce', function ($scope, http, $routeParams, $sce) {
-    var dummyEl = document.createElement('div');
-    $scope.posts = [];
-    $scope.comments = [];
+app.controller('tmpCtrl', ['$scope', 'http', '$routeParams', 'parse', function ($scope, http, $routeParams, parse) {
+  $scope.posts = [];
+  $scope.comments = [];
 
-    function stripLayers(unstripped, level) {
-      var i, max, stripped = [];
+  http.get(function (data) {
+    if ($routeParams.thread) {
+      $scope.posts = parse.posts(data[0]);
+      $scope.comments = parse.comments(data[1]);
+      document.title = $scope.posts[0].title;
+    } else {
+      $scope.posts = parse.posts(data);
+      document.title = 'r/' + $scope.posts[0].subreddit;
+    }
+    $scope.$apply();
+  });
+}]);
+
+app.factory('parse', function () {
+  return {
+    comments: function (data, level) {
+      var i, max;
       level = level || 1;
-      unstripped = unstripped.data.children;
-      for (i = 0, max = unstripped.length; i < max; i += 1) {
-        stripped[i] = unstripped[i].data;
+      data = data.data.children;
+      for (i = 0, max = data.length; i < max; i += 1) {
+        data[i] = data[i].data;
         //add score, since reddit omits it:
-        stripped[i].score = stripped[i].ups - stripped[i].downs;
-        if (typeof stripped[i].replies === 'object') {
+        data[i].score = data[i].ups - data[i].downs;
+        if (typeof data[i].replies === 'object') {
           if (level === 9) {
-            stripped[i].more = true;
+            data[i].more = true;
           }
-          stripped[i].replies = stripLayers(stripped[i].replies, level + 1);
+          data[i].replies = this.comments(data[i].replies, level + 1);
         }
       }
-      return stripped;
-    }
-
-    function parseCData(data) {
-      data = angular.fromJson(data);
-      $scope.posts = [data[0].data.children[0].data];
-      $scope.comments = stripLayers(data[1]);
-      document.title = $scope.posts[0].title;
-    }
-
-    function parsePData(data) {
+      return data;
+    },
+    posts: function (data) {
       var i, max;
-      data = angular.fromJson(data).data.children;
+      data = data.data.children;
       for (i = 0, max = data.length; i < max; i += 1) {
         data[i] = data[i].data;
       }
-      $scope.posts = data;
-      document.title = 'r/' + $routeParams.subreddit;
+      return data;
     }
-
-    $scope.parseHtml = function (body_html) {
-      dummyEl.innerHTML = body_html;
-      body_html = dummyEl.textContent;
-      dummyEl.textContent = '';
-      return $sce.trustAsHtml(body_html);
-    };
-
-    http.get(function (data) {
-      if ($routeParams.thread) {
-        parseCData(data);
-      } else {
-        parsePData(data);
-      }
-      $scope.$apply();
-    });
-  }
-]);
+  };
+});
 
 app.filter('timeago', ['moment', function (moment) {
   return function (timestamp) {
@@ -120,7 +111,7 @@ app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBa
   return {
     get: function (callback) {
       $httpBackend('GET', buildUrl(), null, function (status, data) {
-        callback(data);
+        callback(angular.fromJson(data));
       });
     }
   };
@@ -132,4 +123,8 @@ app.factory('moment', function () {
 
 app.factory('jQuery', function () {
   return jQuery;
+});
+
+app.factory('localStorage', function () {
+  return localStorage;
 });
