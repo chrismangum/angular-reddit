@@ -64,6 +64,13 @@ app.factory('parse', function () {
       level = level || 1;
       data = data.data.children;
       for (i = 0, max = data.length; i < max; i += 1) {
+        //delete 'more' items
+        if (data[i].kind === "more") {
+          data.splice(i, i + 1);
+          max -= 1;
+          i -= 1;
+          continue;
+        }
         data[i] = data[i].data;
         //add score, since reddit omits it:
         data[i].score = data[i].ups - data[i].downs;
