@@ -5,10 +5,11 @@ var express = require('express'),
 
 app.use(express.logger('dev'));
 app.use(function (req, res, next) {
-  if (req.connection.remoteAddress === '127.0.0.1') {
+  var ip = req.connection.remoteAddress;
+  if (ip === '127.0.0.1') {
     next();
   } else {
-    console.log('invalid ip');
+    console.log('invalid ip: ' + ip);
     res.end();
   }
 });
