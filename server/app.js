@@ -1,9 +1,9 @@
-var express = require('express'),
+var connect = require('connect'),
   http = require('http'),
   path = require('path'),
-  app = express();
+  app = connect();
 
-app.use(express.logger('dev'));
+app.use(connect.logger('dev'));
 app.use(function (req, res, next) {
   var ip = req.connection.remoteAddress;
   if (ip === '127.0.0.1') {
@@ -13,5 +13,5 @@ app.use(function (req, res, next) {
     res.end();
   }
 });
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(connect.static(path.join(__dirname, '../public')));
 http.createServer(app).listen(3000);
