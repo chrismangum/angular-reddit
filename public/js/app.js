@@ -29,6 +29,7 @@ app.controller('mainCtrl', ['$scope', 'jQuery', 'localStorage', '$sce', function
     'Slate': '/css/bootstrap-themes/slate.min.css',
     'Yeti': '/css/bootstrap-themes/yeti.min.css'
   };
+  $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming'];
   $scope.setTheme = function(name) {
     storage.theme = name;
     $theme.attr('href', $scope.themes[name]);

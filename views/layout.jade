@@ -23,6 +23,16 @@ html(ng-app="app")
                 ul.dropdown-menu
                   li(ng-repeat="(name, src) in themes")
                     a(tabindex='-1', ng-click="setTheme(name)") {{name}}
+            ul.nav.navbar-nav.navbar-right
+              li.dropdown
+                a.dropdown-toggle(data-toggle='dropdown')
+                  | Subreddits
+                  span.caret
+                ul.dropdown-menu
+                  li
+                    a.btn.btn-default Edit
+                  li(ng-repeat="subreddit in subreddits")
+                    a(tabindex='-1', ng-href="#/{{subreddit}}") {{subreddit}}
     .container.main(ng-view)
     script(src="/vendor/jquery/jquery.min.js")
     script(src="/vendor/angular/angular.js")
