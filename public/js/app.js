@@ -98,14 +98,11 @@ app.filter('timeago', ['moment', function (moment) {
 app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBackend, $routeParams, $) {
   function buildUrl() {
     var url = 'http://www.reddit.com/r/',
-      params = $.extend({}, $routeParams);
+      params = _.extend({}, $routeParams);
     url += params.subreddit;
     url += params.thread ? '/comments/' + params.thread : '';
     url += params.sort ? '/' + params.sort : '';
-
-    delete params.subreddit;
-    delete params.thread;
-
+    params = _.omit(params, 'subreddit', 'thread');
     params.limit = 1000;
     url += '.json?';
     return url + $.param(params);
