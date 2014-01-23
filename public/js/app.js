@@ -36,6 +36,12 @@ app.controller('mainCtrl', ['$scope', 'underscore', 'jQuery', 'localStorage', '$
     storage.theme = 'Cyborg';
   }
   $scope.setTheme(storage.theme);
+
+  $(window).on('scroll', function () {
+    if ($(document).height() === $(this).scrollTop() + this.innerHeight) {
+      console.log('bottom');
+    }
+  });
 }]);
 
 app.controller('tmpCtrl', ['$scope', 'http', '$routeParams', 'parse', function ($scope, http, $routeParams, parse) {
