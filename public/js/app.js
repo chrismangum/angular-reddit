@@ -11,16 +11,13 @@ app.config(['$routeProvider', function ($routeProvider) {
   });
 }]);
 
-app.controller('mainCtrl', ['$scope', 'jQuery', 'localStorage', '$sce', function ($scope, $, storage, $sce) {
+app.controller('mainCtrl', ['$scope', 'underscore', 'jQuery', 'localStorage', '$sce', function ($scope, _, $, storage, $sce) {
   var $theme = $('.theme');
   var $body = $(document.body);
   var dummyEl = document.createElement('div');
 
   $scope.parseHtml = function (body_html) {
-    dummyEl.innerHTML = body_html;
-    body_html = dummyEl.textContent;
-    dummyEl.textContent = '';
-    return $sce.trustAsHtml(body_html);
+    return $sce.trustAsHtml(_.unescape(body_html));
   };
   $scope.themes = {
     'Amelia': '/css/bootstrap-themes/amelia.min.css',
@@ -59,40 +56,31 @@ app.controller('tmpCtrl', ['$scope', 'http', '$routeParams', 'parse', function (
 }]);
 
 app.factory('parse', function () {
-  return {
-    comments: function (data, level) {
-      var i, max;
-      level = level || 1;
-      data = data.data.children;
-      for (i = 0, max = data.length; i < max; i += 1) {
-        //delete 'more' items
-        if (data[i].kind === "more") {
-          data.splice(i, i + 1);
-          max -= 1;
-          i -= 1;
-          continue;
-        }
-        data[i] = data[i].data;
-        //add score, since reddit omits it:
-        data[i].score = data[i].ups - data[i].downs;
-        if (typeof data[i].replies === 'object') {
-          if (level === 9) {
-            data[i].more = true;
+  var parse = {};
+  parse.comments = function (data, level) {
+    level = level || 1;
+    return _.compact(_.map(data.data.children,
+      function (comment) {
+        if (comment.kind !== "more") {
+          comment = comment.data;
+          comment.score = comment.ups - comment.downs;
+          if (comment.replies) {
+            if (level === 9) {
+              comment.more = true;
+            }
+            comment.replies = parse.comments(comment.replies, level + 1);
           }
-          data[i].replies = this.comments(data[i].replies, level + 1);
+          return comment;
         }
       }
-      return data;
-    },
-    posts: function (data) {
-      var i, max;
-      data = data.data.children;
-      for (i = 0, max = data.length; i < max; i += 1) {
-        data[i] = data[i].data;
-      }
-      return data;
-    }
+    ));
   };
+  parse.posts = function (data) {
+    return _.map(data.data.children, function (post) {
+      return post.data;
+    });
+  };
+  return parse;
 });
 
 app.filter('timeago', ['moment', function (moment) {
@@ -127,6 +115,10 @@ app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBa
 
 app.factory('moment', function () {
   return moment;
+});
+
+app.factory('underscore', function () {
+  return _;
 });
 
 app.factory('jQuery', function () {
