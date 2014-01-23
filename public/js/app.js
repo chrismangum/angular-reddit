@@ -82,9 +82,7 @@ app.factory('parse', function () {
     ));
   };
   parse.posts = function (data) {
-    return _.map(data.data.children, function (post) {
-      return post.data;
-    });
+    return _.pluck(data.data.children, 'data');
   };
   return parse;
 });
