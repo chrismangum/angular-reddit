@@ -52,11 +52,10 @@ app.controller('tmpCtrl', ['$scope', 'http', '$routeParams', 'parse', function (
     if ($routeParams.thread) {
       $scope.posts = parse.posts(data[0]);
       $scope.comments = parse.comments(data[1]);
-      document.title = $scope.posts[0].title;
     } else {
       $scope.posts = parse.posts(data);
-      document.title = 'r/' + $scope.posts[0].subreddit;
     }
+    document.title = $routeParams.subreddit;
     $scope.$apply();
   });
 }]);
