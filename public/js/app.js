@@ -1,14 +1,15 @@
 var app = angular.module('app', ['ngRoute']);
 
-app.config(['$routeProvider', function ($routeProvider) {
+app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
   $routeProvider.when('/r/:subreddit', {
-    templateUrl: 'template.html',
+    templateUrl: '/static/template.html',
     controller: 'tmpCtrl'
   });
   $routeProvider.when('/r/:subreddit/comments/:thread/:title', {
-    templateUrl: 'template.html',
+    templateUrl: '/static/template.html',
     controller: 'tmpCtrl'
   });
+  $locationProvider.html5Mode(true);
 }]);
 
 app.controller('mainCtrl', ['$scope', 'underscore', 'jQuery', 'localStorage', '$sce', function ($scope, _, $, storage, $sce) {
@@ -20,11 +21,11 @@ app.controller('mainCtrl', ['$scope', 'underscore', 'jQuery', 'localStorage', '$
     return $sce.trustAsHtml(_.unescape(body_html));
   };
   $scope.themes = {
-    'Amelia': '/css/bootstrap-themes/amelia.min.css',
-    'Cyborg': '/css/bootstrap-themes/cyborg.min.css',
-    'Default': '/css/bootstrap-themes/default.min.css',
-    'Slate': '/css/bootstrap-themes/slate.min.css',
-    'Yeti': '/css/bootstrap-themes/yeti.min.css'
+    'Amelia': '/static/css/bootstrap-themes/amelia.min.css',
+    'Cyborg': '/static/css/bootstrap-themes/cyborg.min.css',
+    'Default': '/static/css/bootstrap-themes/default.min.css',
+    'Slate': '/static/css/bootstrap-themes/slate.min.css',
+    'Yeti': '/static/css/bootstrap-themes/yeti.min.css'
   };
   $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming'];
   $scope.setTheme = function(name) {
@@ -92,7 +93,7 @@ app.filter('timeago', ['moment', function (moment) {
   };
 }]);
 
-app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', function ($httpBackend, $routeParams, $) {
+app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', 'underscore', function ($httpBackend, $routeParams, $, _) {
   function buildUrl() {
     var url = 'http://www.reddit.com/r/',
       params = _.extend({}, $routeParams);
