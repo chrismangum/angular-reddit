@@ -21,8 +21,8 @@ html(ng-app="app")
                   | Theme
                   span.caret
                 ul.dropdown-menu
-                  li(ng-repeat="(name, src) in themes")
-                    a(tabindex='-1', ng-click="setTheme(name)") {{name}}
+                  li(ng-repeat="theme in themes")
+                    a(tabindex='-1', ng-click="setTheme(theme)") {{theme}}
             ul.nav.navbar-nav.navbar-right
               li.dropdown
                 a.dropdown-toggle(data-toggle='dropdown')
@@ -37,7 +37,7 @@ html(ng-app="app")
     script(src="/static/vendor/jquery/jquery.min.js")
     script(src="/static/vendor/angular/angular.js")
     script(src="/static/vendor/angular-route/angular-route.js")
+    script(src="/static/vendor/underscore/underscore.js")
     script(src="/static/js/app.min.js")
     script(src="/static/vendor/momentjs/moment.js")
     script(src="/static/vendor/bootstrap/dist/js/bootstrap.min.js")
-    script(src="/static/vendor/underscore/underscore.js")
