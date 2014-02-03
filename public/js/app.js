@@ -102,7 +102,7 @@ app.factory('http', ['$httpBackend', '$routeParams', 'jQuery', '_',
       url += params.thread ? '/comments/' + params.thread : '';
       url += params.sort ? '/' + params.sort : '';
       params = _.omit(params, 'subreddit', 'thread');
-      params.limit = 1000;
+      params.limit = 500;
       url += '.json?';
       return url + $.param(params);
     }
