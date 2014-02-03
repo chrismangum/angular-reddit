@@ -23,7 +23,7 @@ app.controller('mainCtrl', ['$scope', '_', 'jQuery', 'localStorage', '$sce',
     $scope.parseHtml = function (body_html) {
       return $sce.trustAsHtml(_.unescape(body_html));
     };
-    $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Slate', 'Yeti'];
+    $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Flatly', 'Slate', 'Yeti'];
     $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming'];
     $scope.setTheme = function(name) {
       storage.theme = name;
