@@ -92,11 +92,3 @@ app.factory 'http', ['$http', '$routeParams', 'jQuery', '_'
 _.each ['moment', '_', 'jQuery', 'localStorage'], (item) ->
   app.factory item, () ->
     window[item]
-
-
-
-
-
-
-
-
