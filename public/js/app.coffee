@@ -74,14 +74,12 @@ app.factory 'http', ['$http', '$routeParams', '_'
 
     buildUrl = ->
       url = 'http://www.reddit.com/r/'
-      params = _.clone $routeParams
+      params = _.extend limit: 500, $routeParams
       url += params.subreddit
       url += if params.thread then '/comments/' + params.thread else ''
       url += if params.sort then '/' + params.sort else ''
       params = _.omit params, 'subreddit', 'thread'
-      params.limit = 500
-      url += '.json?'
-      url + buildQueryString params
+      url + '.json?' + buildQueryString params
 
     get: ->
       $http.get buildUrl()
