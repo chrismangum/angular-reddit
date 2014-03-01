@@ -15,7 +15,7 @@ app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
   ($scope, _, storage, $sce) ->
 
     $scope.parseComments = (data, level) ->
-      level = level or 1
+      level ?= 1
       _.compact data.data.children.map (comment) ->
         if comment.kind != 'more'
           comment = comment.data
