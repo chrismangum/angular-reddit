@@ -83,7 +83,7 @@ app.factory 'http', ['$http', '$routeParams', '_'
       url += '.json?'
       url + buildQueryString params
 
-    get: (callback) ->
+    get: ->
       $http.get buildUrl()
 ]
 
