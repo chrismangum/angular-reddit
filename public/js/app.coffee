@@ -48,7 +48,8 @@ app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams'
     $scope.posts = []
     $scope.comments = []
 
-    http.get (data) ->
+    http.get().then (response) ->
+      data = response.data
       if $routeParams.thread
         $scope.posts = $scope.parsePosts data[0]
         $scope.comments = $scope.parseComments data[1]
@@ -83,8 +84,7 @@ app.factory 'http', ['$http', '$routeParams', '_'
       url + buildQueryString params
 
     get: (callback) ->
-      $http.get(buildUrl()).success (data) ->
-        callback data
+      $http.get buildUrl()
 ]
 
 ['moment', '_', 'localStorage'].forEach (item) ->
