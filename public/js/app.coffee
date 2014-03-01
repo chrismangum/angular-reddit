@@ -13,11 +13,24 @@ app.config ['$routeProvider', '$locationProvider'
 
 app.controller 'mainCtrl', ['$scope', '_', 'jQuery', 'localStorage', '$sce'
   ($scope, _, $, storage, $sce) ->
-    $theme = $ '.theme'
-    $body = $ document.body
+
+    $scope.parseComments = (data, level) ->
+      level = level or 1
+      _.compact data.data.children.map (comment) ->
+        if comment.kind != 'more'
+          comment = comment.data
+          comment.score = comment.ups - comment.downs
+          if comment.replies
+            if level == 9
+              comment.more = true
+            comment.replies = parse.comments comment.replies, level + 1
+          comment
 
     $scope.parseHtml = (bodyHtml) ->
       $sce.trustAsHtml _.unescape bodyHtml
+
+    $scope.parsePosts = (data) ->
+      _.pluck data.data.children, 'data'
 
     $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming']
 
@@ -27,45 +40,21 @@ app.controller 'mainCtrl', ['$scope', '_', 'jQuery', 'localStorage', '$sce'
       storage.theme = index
       $scope.themeName = $scope.themes[index]
 
-    unless storage.theme
-      storage.theme = 1
-
-    $scope.setTheme storage.theme
-
-    $(window).on 'scroll', ->
-      if $(document).height() == $(this).scrollTop() + this.innerHeight
-        console.log 'bottom'
+    $scope.setTheme storage.theme or 1
 ]
 
-app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams', 'parse'
-  ($scope, http, $routeParams, parse) ->
+app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams'
+  ($scope, http, $routeParams) ->
     $scope.posts = []
     $scope.comments = []
     http.get (data) ->
       if $routeParams.thread
-        $scope.posts = parse.posts data[0]
-        $scope.comments = parse.comments data[1]
+        $scope.posts = $scope.parsePosts data[0]
+        $scope.comments = $scope.parseComments data[1]
       else
-        $scope.posts = parse.posts data
+        $scope.posts = $scope.parsePosts data
       document.title = $routeParams.subreddit
 ]
-
-app.factory 'parse', ->
-  parse = {}
-  parse.comments = (data, level) ->
-    level = level or 1
-    _.compact data.data.children.map (comment) ->
-      if comment.kind != 'more'
-        comment = comment.data
-        comment.score = comment.ups - comment.downs
-        if comment.replies
-          if level == 9
-            comment.more = true
-          comment.replies = parse.comments comment.replies, level + 1
-        comment
-  parse.posts = (data) ->
-    _.pluck data.data.children, 'data'
-  parse
 
 app.filter 'timeago', ['moment', (moment) ->
   (timestamp) ->
@@ -76,7 +65,7 @@ app.factory 'http', ['$http', '$routeParams', 'jQuery', '_'
   ($http, $routeParams, $, _) ->
     buildUrl = ->
       url = 'http://www.reddit.com/r/'
-      params = _.extend {}, $routeParams
+      params = _.clone $routeParams
       url += params.subreddit
       url += if params.thread then '/comments/' + params.thread else ''
       url += if params.sort then '/' + params.sort else ''
@@ -89,6 +78,6 @@ app.factory 'http', ['$http', '$routeParams', 'jQuery', '_'
         callback data
 ]
 
-_.each ['moment', '_', 'jQuery', 'localStorage'], (item) ->
+['moment', '_', 'jQuery', 'localStorage'].forEach (item) ->
   app.factory item, () ->
     window[item]

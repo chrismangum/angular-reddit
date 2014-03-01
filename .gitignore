@@ -1,6 +1,6 @@
 *.swp
 *.min.js
-
+public/js/*.js
 public/css/*.css
 public/vendor
 public/index.html
