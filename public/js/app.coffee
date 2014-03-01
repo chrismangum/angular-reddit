@@ -81,6 +81,7 @@ app.factory 'http', ['$http', '$routeParams', '_'
       params.limit = 500
       url += '.json?'
       url + buildQueryString params
+
     get: (callback) ->
       $http.get(buildUrl()).success (data) ->
         callback data
