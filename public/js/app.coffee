@@ -70,14 +70,13 @@ app.factory 'http', ['$http', '$routeParams', '_'
       string = []
       for key, val of params
         string.push(key + '=' + val)
-      string.join('&')
+      string.join '&'
 
     buildUrl = ->
-      url = 'http://www.reddit.com/r/'
       params = _.extend limit: 500, $routeParams
-      url += params.subreddit + '/'
+      url = "http://www.reddit.com/r/#{params.subreddit}/"
       url += 'comments/' + params.thread if params.thread?
-      url += params.sort if params.sort?
+      url += params.sort + '/' if params.sort?
       params = _.omit params, 'subreddit', 'thread'
       url + '.json?' + buildQueryString params
 
