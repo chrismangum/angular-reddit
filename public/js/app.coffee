@@ -14,8 +14,7 @@ app.config ['$routeProvider', '$locationProvider'
 app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
   ($scope, _, storage, $sce) ->
 
-    $scope.parseComments = (data, level) ->
-      level ?= 1
+    $scope.parseComments = (data, level = 1) ->
       _.compact data.data.children.map (comment) ->
         if comment.kind != 'more'
           comment = comment.data
