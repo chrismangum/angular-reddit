@@ -84,5 +84,5 @@ app.factory 'http', ['$http', '$routeParams', '_'
 ]
 
 ['moment', '_', 'localStorage'].forEach (item) ->
-  app.factory item, () ->
+  app.factory item, ->
     window[item]
