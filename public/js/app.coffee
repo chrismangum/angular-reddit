@@ -16,11 +16,11 @@ app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
 
     $scope.parseComments = (data, level = 1) ->
       _.compact data.data.children.map (comment) ->
-        if comment.kind != 'more'
+        if comment.kind isnt 'more'
           comment = comment.data
           comment.score = comment.ups - comment.downs
           if comment.replies
-            if level == 9
+            if level is 9
               comment.more = true
             comment.replies = $scope.parseComments comment.replies, level + 1
           comment
@@ -35,18 +35,15 @@ app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
 
     $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Flatly', 'Slate', 'Yeti']
 
-    $scope.setTheme = (index) ->
+    $scope.setTheme = (index = 1) ->
       storage.theme = index
       $scope.themeName = $scope.themes[index]
 
-    $scope.setTheme storage.theme or 1
+    $scope.setTheme storage.theme
 ]
 
 app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams'
   ($scope, http, $routeParams) ->
-    $scope.posts = []
-    $scope.comments = []
-
     http.get().then (response) ->
       data = response.data
       if $routeParams.thread
@@ -74,9 +71,9 @@ app.factory 'http', ['$http', '$routeParams', '_'
     buildUrl = ->
       params = _.extend limit: 500, $routeParams
       url = "http://www.reddit.com/r/#{params.subreddit}/"
-      url += 'comments/' + params.thread if params.thread?
-      url += params.sort + '/' if params.sort?
-      params = _.omit params, 'subreddit', 'thread'
+      url += "comments/#{params.thread}/" if params.thread
+      url += params.sort if params.sort
+      params = _.omit params, ['subreddit', 'thread']
       url + '.json?' + buildQueryString params
 
     get: ->
