@@ -1,1 +1,44 @@
-extends layout
+doctype html
+html(ng-app="app", ng-controller="mainCtrl")
+  head
+    title=Testing
+    link.theme(rel="stylesheet")
+    link(rel="stylesheet", ng-href="/static/css/bootstrap-themes/{{themeName.toLowerCase()}}.min.css")
+    link(rel='stylesheet', href='/static/css/style.min.css')
+  body(id="{{themeName}}")
+    .navbar.navbar-default.navbar-fixed-top
+      .container
+        .row
+          .navbar-header
+            //a.navbar-brand Angular-Reddit
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-main')
+              span.icon-bar
+              span.icon-bar
+              span.icon-bar
+          .navbar-collapse.collapse#navbar-main
+            ul.nav.navbar-nav
+              li.dropdown
+                a.dropdown-toggle(data-toggle='dropdown')
+                  | Theme
+                  span.caret
+                ul.dropdown-menu
+                  li(ng-repeat="theme in themes")
+                    a(tabindex='-1', ng-click="setTheme($index)") {{theme}}
+            ul.nav.navbar-nav.navbar-right
+              li.dropdown
+                a.dropdown-toggle(data-toggle='dropdown')
+                  | Subreddits
+                  span.caret
+                ul.dropdown-menu
+                  li
+                    a.btn.btn-default Edit
+                  li(ng-repeat="subreddit in subreddits")
+                    a(tabindex='-1', ng-href="/{{subreddit}}") {{subreddit}}
+    .container.main(ng-view)
+    script(src="/static/vendor/jquery/dist/jquery.min.js")
+    script(src="/static/vendor/angular/angular.js")
+    script(src="/static/vendor/angular-route/angular-route.js")
+    script(src="/static/vendor/underscore/underscore.js")
+    script(src="/static/js/app.min.js")
+    script(src="/static/vendor/momentjs/moment.js")
+    script(src="/static/vendor/bootstrap/dist/js/bootstrap.min.js")
