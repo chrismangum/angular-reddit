@@ -15,7 +15,7 @@ app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
   ($scope, _, storage, $sce) ->
 
     $scope.parseComments = (data, level = 1) ->
-      _.compact data.data.children.map (comment) ->
+      _.compact _.map data.data.children, (comment) ->
         if comment.kind isnt 'more'
           comment = comment.data
           comment.score = comment.ups - comment.downs
