@@ -9,4 +9,4 @@ app.get('*', function (req, res) {
   res.sendfile(path.join(__dirname, "../public/index.html"));
 });
 
-http.createServer(app).listen(3000);
+http.createServer(app).listen(process.env.PORT || 3000);
