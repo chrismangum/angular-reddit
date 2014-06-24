@@ -35,10 +35,6 @@ html(ng-app="app", ng-controller="mainCtrl")
                   li(ng-repeat="subreddit in subreddits")
                     a(tabindex='-1', ng-href="/{{subreddit}}") {{subreddit}}
     .container.main(ng-view)
-    script(src="/static/vendor/jquery/dist/jquery.min.js")
-    script(src="/static/vendor/angular/angular.js")
-    script(src="/static/vendor/angular-route/angular-route.js")
-    script(src="/static/vendor/lodash/dist/lodash.min.js")
+    //bower:js
+    //endbower
     script(src="/static/js/app.min.js")
-    script(src="/static/vendor/momentjs/moment.js")
-    script(src="/static/vendor/bootstrap/dist/js/bootstrap.min.js")

@@ -4,7 +4,8 @@ var gulp = require('gulp'),
   concat = require('gulp-concat'),
   jade = require('gulp-jade'),
   nodemon = require('gulp-nodemon'),
-  stylus = require('gulp-stylus');
+  stylus = require('gulp-stylus'),
+  wiredep = require('wiredep').stream;
 
 var paths = {
   js: 'public/js/*.coffee',
@@ -22,7 +23,9 @@ gulp.task('scripts', function () {
 
 gulp.task('jade', function () {
   gulp.src(paths.jade)
-    .pipe(jade())
+    .pipe(jade({
+      pretty: true
+    }))
     .pipe(gulp.dest('public/'));
 });
 
@@ -35,6 +38,20 @@ gulp.task('stylus', function () {
     .pipe(gulp.dest('public/css'));
 });
 
+gulp.task('wiredep', function () {
+  gulp.src('./public/index.html')
+    .pipe(wiredep({
+      fileTypes: {
+        html: {
+          replace: {
+            js: '<script src="/static/{{filePath}}"></script>'
+          }
+        }
+      }
+    }))
+    .pipe(gulp.dest('./public'));
+});
+
 gulp.task('nodemon', function () {
   nodemon({
     script: 'server/app.js',
@@ -45,9 +62,10 @@ gulp.task('nodemon', function () {
 
 gulp.task('watch', function () {
   gulp.watch(paths.js, ['scripts']);
-  gulp.watch(paths.jade, ['jade']);
+  gulp.watch(paths.jade, ['views']);
   gulp.watch(paths.stylus, ['stylus']);
 });
 
-gulp.task('default', ['scripts', 'jade', 'stylus', 'watch', 'nodemon']);
-gulp.task('heroku:development', ['scripts', 'jade', 'stylus']);
+gulp.task('views', ['jade', 'wiredep']);
+gulp.task('default', ['scripts', 'views', 'stylus', 'watch', 'nodemon']);
+gulp.task('heroku:development', ['scripts', 'views', 'stylus']);
