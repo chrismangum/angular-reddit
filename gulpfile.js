@@ -6,9 +6,9 @@ var gulp = require('gulp'),
 
 var paths = {
   js: 'public/js/*.coffee',
-  jade: 'views/*.jade',
+  jade: ['public/*.jade', '!public/index.jade'],
   stylus: 'public/css/*.styl',
-  index: 'public/index.html'
+  index: 'public/index.jade'
 };
 
 gulp.task('scripts', function () {
@@ -37,6 +37,9 @@ gulp.task('stylus', function () {
 
 gulp.task('wiredep', function () {
   gulp.src(paths.index)
+    .pipe(plugin.jade({
+      pretty: true
+    }))
     .pipe(wiredep({
       fileTypes: {
         html: {
@@ -64,5 +67,6 @@ gulp.task('watch', function () {
   gulp.watch(paths.index, ['wiredep']);
 });
 
-gulp.task('default', ['scripts', 'jade', 'stylus', 'watch', 'nodemon']);
-gulp.task('heroku:development', ['scripts', 'jade', 'stylus', 'wiredep']);
+gulp.task('views', ['jade', 'wiredep']);
+gulp.task('default', ['scripts', 'views', 'stylus', 'watch', 'nodemon']);
+gulp.task('heroku:development', ['scripts', 'views', 'stylus', 'wiredep']);
