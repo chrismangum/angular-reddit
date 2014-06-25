@@ -11,6 +11,7 @@ var paths = {
   js: 'public/js/*.coffee',
   jade: 'views/*.jade',
   stylus: 'public/css/*.styl',
+  index: 'public/index.html',
 };
 
 gulp.task('scripts', function () {
@@ -39,7 +40,7 @@ gulp.task('stylus', function () {
 });
 
 gulp.task('wiredep', function () {
-  gulp.src('./public/index.html')
+  gulp.src(paths.index)
     .pipe(wiredep({
       fileTypes: {
         html: {
@@ -62,10 +63,10 @@ gulp.task('nodemon', function () {
 
 gulp.task('watch', function () {
   gulp.watch(paths.js, ['scripts']);
-  gulp.watch(paths.jade, ['views']);
+  gulp.watch(paths.jade, ['jade']);
   gulp.watch(paths.stylus, ['stylus']);
+  gulp.watch(paths.index, ['wiredep']);
 });
 
-gulp.task('views', ['jade', 'wiredep']);
-gulp.task('default', ['scripts', 'views', 'stylus', 'watch', 'nodemon']);
-gulp.task('heroku:development', ['scripts', 'views', 'stylus']);
+gulp.task('default', ['scripts', 'jade', 'stylus', 'watch', 'nodemon']);
+gulp.task('heroku:development', ['scripts', 'jade', 'stylus']);
