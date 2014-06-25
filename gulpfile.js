@@ -6,7 +6,7 @@ var gulp = require('gulp'),
 
 var paths = {
   js: 'public/js/*.coffee',
-  jade: ['public/*.jade', '!public/index.jade'],
+  jade: 'views/*.jade',
   stylus: 'public/css/*.styl',
   index: 'public/index.jade'
 };
