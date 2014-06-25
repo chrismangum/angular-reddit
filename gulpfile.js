@@ -65,4 +65,4 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', ['scripts', 'jade', 'stylus', 'watch', 'nodemon']);
-gulp.task('heroku:development', ['scripts', 'jade', 'stylus']);
+gulp.task('heroku:development', ['scripts', 'jade', 'stylus', 'wiredep']);
