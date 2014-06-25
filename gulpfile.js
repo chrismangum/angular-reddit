@@ -1,30 +1,26 @@
 var gulp = require('gulp'),
-  coffee = require('gulp-coffee'),
-  uglify = require('gulp-uglify'),
-  concat = require('gulp-concat'),
-  jade = require('gulp-jade'),
-  nodemon = require('gulp-nodemon'),
-  stylus = require('gulp-stylus'),
+  plugin = require('gulp-load-plugins')({
+    camelize: true
+  }),
   wiredep = require('wiredep').stream;
 
 var paths = {
   js: 'public/js/*.coffee',
   jade: 'views/*.jade',
   stylus: 'public/css/*.styl',
-  index: 'public/index.html',
+  index: 'public/index.html'
 };
 
 gulp.task('scripts', function () {
   gulp.src(paths.js)
-    .pipe(coffee())
-    .pipe(uglify())
-    .pipe(concat('app.min.js'))
+    .pipe(plugin.coffee())
+    .pipe(plugin.uglify())
     .pipe(gulp.dest('public/js'));
 });
 
 gulp.task('jade', function () {
   gulp.src(paths.jade)
-    .pipe(jade({
+    .pipe(plugin.jade({
       pretty: true
     }))
     .pipe(gulp.dest('public/'));
@@ -32,7 +28,7 @@ gulp.task('jade', function () {
 
 gulp.task('stylus', function () {
   gulp.src(paths.stylus)
-    .pipe(stylus({
+    .pipe(plugin.stylus({
       set: ['compress'],
       use: ['nib']
     }))
@@ -54,7 +50,7 @@ gulp.task('wiredep', function () {
 });
 
 gulp.task('nodemon', function () {
-  nodemon({
+  plugin.nodemon({
     script: 'server/app.js',
     ext: 'js,coffee',
     ignore: ['public/**', 'node_modules/**']
