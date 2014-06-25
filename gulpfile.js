@@ -69,4 +69,4 @@ gulp.task('watch', function () {
 
 gulp.task('views', ['jade', 'wiredep']);
 gulp.task('default', ['scripts', 'views', 'stylus', 'watch', 'nodemon']);
-gulp.task('heroku:development', ['scripts', 'views', 'stylus', 'wiredep']);
+gulp.task('heroku:development', ['scripts', 'views', 'stylus']);
