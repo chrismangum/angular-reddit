@@ -11,35 +11,34 @@ app.config ['$routeProvider', '$locationProvider'
     $locationProvider.html5Mode true
 ]
 
-app.controller 'mainCtrl', ['$scope', '_', 'localStorage', '$sce'
-  ($scope, _, storage, $sce) ->
+app.controller 'mainCtrl', ['$scope', '$sce', ($scope, $sce) ->
+  $scope.parseComments = (data, level = 1) ->
+    for comment in data.data.children
+      if comment.kind is 'more'
+        continue
+      comment = comment.data
+      comment.score = comment.ups - comment.downs
+      if comment.replies
+        if level is 9
+          comment.more = true
+        comment.replies = $scope.parseComments comment.replies, level + 1
+      comment
 
-    $scope.parseComments = (data, level = 1) ->
-      _.compact _.map data.data.children, (comment) ->
-        if comment.kind isnt 'more'
-          comment = comment.data
-          comment.score = comment.ups - comment.downs
-          if comment.replies
-            if level is 9
-              comment.more = true
-            comment.replies = $scope.parseComments comment.replies, level + 1
-          comment
+  $scope.parseHtml = (bodyHtml) ->
+    $sce.trustAsHtml _.unescape bodyHtml
 
-    $scope.parseHtml = (bodyHtml) ->
-      $sce.trustAsHtml _.unescape bodyHtml
+  $scope.parsePosts = (data) ->
+    _.pluck data.data.children, 'data'
 
-    $scope.parsePosts = (data) ->
-      _.pluck data.data.children, 'data'
+  $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming']
 
-    $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming']
+  $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Flatly', 'Slate', 'Yeti']
 
-    $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Flatly', 'Slate', 'Yeti']
+  $scope.setTheme = (index = 1) ->
+    localStorage.theme = index
+    $scope.themeName = $scope.themes[index]
 
-    $scope.setTheme = (index = 1) ->
-      storage.theme = index
-      $scope.themeName = $scope.themes[index]
-
-    $scope.setTheme storage.theme
+  $scope.setTheme localStorage.theme
 ]
 
 app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams'
@@ -54,32 +53,27 @@ app.controller 'tmpCtrl', ['$scope', 'http', '$routeParams'
       document.title = $routeParams.subreddit
 ]
 
-app.filter 'timeago', ['moment', (moment) ->
+app.filter 'timeago', ->
   (timestamp) ->
     moment(timestamp * 1000).fromNow()
+
+app.factory 'http', ['$http', '$routeParams', ($http, $routeParams) ->
+  buildQueryString = (params) ->
+    string = []
+    for key, val of params
+      string.push "#{ key }=#{ val }"
+    string.join '&'
+
+  buildUrl = ->
+    params = _.assign limit: 500, $routeParams
+    url = "http://www.reddit.com/r/#{params.subreddit}/"
+    if params.thread
+      url += "comments/#{params.thread}/"
+    if params.sort
+      url += params.sort
+    params = _.omit params, ['subreddit', 'thread']
+    url + '.json?' + buildQueryString params
+
+  get: ->
+    $http.get buildUrl()
 ]
-
-app.factory 'http', ['$http', '$routeParams', '_'
-  ($http, $routeParams, _) ->
-
-    buildQueryString = (params) ->
-      string = []
-      for key, val of params
-        string.push(key + '=' + val)
-      string.join '&'
-
-    buildUrl = ->
-      params = _.extend limit: 500, $routeParams
-      url = "http://www.reddit.com/r/#{params.subreddit}/"
-      url += "comments/#{params.thread}/" if params.thread
-      url += params.sort if params.sort
-      params = _.omit params, ['subreddit', 'thread']
-      url + '.json?' + buildQueryString params
-
-    get: ->
-      $http.get buildUrl()
-]
-
-['moment', '_', 'localStorage'].forEach (item) ->
-  app.factory item, ->
-    window[item]
