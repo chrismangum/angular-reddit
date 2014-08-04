@@ -19,6 +19,7 @@
     "bootstrap": "~3.0.2",
     "angular-route": "~1.2.3",
     "momentjs": "~2.4.0",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "angular-sanitize": "~1.2.21"
   }
 }
