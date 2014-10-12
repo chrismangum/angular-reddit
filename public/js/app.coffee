@@ -1,14 +1,36 @@
-app = angular.module 'app', ['ngRoute', 'ngSanitize']
+app = angular.module 'app', ['ngRoute', 'ngSanitize', 'firebase']
 
 app.config ($routeProvider, $locationProvider) ->
   $routeProvider
-    .when '/:subreddit',
-      templateUrl: '/static/template.html'
-      controller: 'subreddit'
-    .when '/:subreddit/:id',
-      templateUrl: '/static/template.html'
-      controller: 'thread'
-    .otherwise redirectTo: '/all'
+    .when '/',
+      templateUrl: '/static/hn-template.html'
+      controller: ($scope, $hn) ->
+        $scope.updateTitle 'Hacker News'
+        $hn.getTopStories().then (stories) ->
+          $scope.posts = stories
+          $scope.comments = []
+    .when '/:id',
+      templateUrl: '/static/hn-template.html'
+      controller: ($scope, $hn, $routeParams) ->
+        $hn.getStory($routeParams.id).then (story) ->
+          $scope.updateTitle story.title
+          $scope.posts = [story]
+          $scope.comments = story.kids
+    .when '/r/:subreddit',
+      templateUrl: '/static/rdt-template.html'
+      controller: ($scope, $rdt) ->
+        $rdt.getData().then ({posts, comments}) ->
+          $scope.updateTitle posts[0].subreddit
+          $scope.posts = posts
+          $scope.comments = comments
+    .when '/r/:subreddit/:id',
+      templateUrl: '/static/rdt-template.html'
+      controller: ($scope, $rdt) ->
+        $rdt.getData().then ({posts, comments}) ->
+          $scope.updateTitle posts[0].title
+          $scope.posts = posts
+          $scope.comments = comments
+    .otherwise redirectTo: '/'
   $locationProvider.html5Mode true
 
 
@@ -16,7 +38,12 @@ app.controller 'rootCtrl', ($scope, $document) ->
   $scope.updateTitle = (title) ->
     $document[0].title = title
 
-  $scope.subreddits = ['r/commandline', 'r/linux', 'r/programming']
+  $scope.places = [
+    { name: 'Hacker News', path: '/' }
+    { name: 'r/Commandline', path: '/r/commandline' }
+    { name: 'r/Linux', path: '/r/linux' }
+    { name: 'r/Programming', path: '/r/programming' }
+  ]
   $scope.themes = ['Amelia', 'Cyborg', 'Default', 'Flatly', 'Slate', 'Yeti']
 
   $scope.setTheme = (index = 1) ->
@@ -26,21 +53,29 @@ app.controller 'rootCtrl', ($scope, $document) ->
   $scope.setTheme localStorage.theme
 
 
-app.controller 'subreddit', ($scope, $reddit) ->
-  $reddit.getData().then ({posts, comments}) ->
-    $scope.updateTitle posts[0].subreddit
-    $scope.posts = posts
-    $scope.comments = comments
+app.factory '$hn', ($firebase, $q) ->
+  baseUrl = 'https://hacker-news.firebaseio.com/v0'
+  getFb = (url) -> $firebase new Firebase url
+
+  getItem = (id) ->
+    getFb(baseUrl + '/item/' + id).$asObject().$loaded()
+
+  getItemRecursive = (id) ->
+    getItem(id).then (item) ->
+      if item.kids
+        $q.all(_.map item.kids, getItemRecursive).then (kids) ->
+          item.kids = kids
+          item
+      else
+        item
+
+  getStory: getItemRecursive
+  getTopStories: ->
+    getFb(baseUrl + '/topstories').$asArray().$loaded().then (data) =>
+      $q.all _.map _.pluck(data, '$value'), getItem
 
 
-app.controller 'thread', ($scope, $reddit) ->
-  $reddit.getData().then ({posts, comments}) ->
-    $scope.updateTitle posts[0].title
-    $scope.posts = posts
-    $scope.comments = comments
-
-
-app.factory '$reddit', ($http, $routeParams) ->
+app.factory '$rdt', ($http, $routeParams) ->
   parseComments = (data, level = 1) ->
     for c in data.data.children
       if c.kind is 'more'

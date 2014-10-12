@@ -41,6 +41,10 @@ gulp.task('wiredep', function () {
       pretty: true
     }))
     .pipe(wiredep({
+      exclude: [
+        'public/vendor/mockfirebase',
+        'public/vendor/firebase-simple-login'
+      ],
       fileTypes: {
         html: {
           replace: {

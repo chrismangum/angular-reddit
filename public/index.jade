@@ -26,13 +26,11 @@ html(ng-app="app", ng-controller="rootCtrl")
             ul.nav.navbar-nav.navbar-right
               li.dropdown
                 a.dropdown-toggle(data-toggle='dropdown')
-                  | Subreddits
+                  | Places
                   span.caret
                 ul.dropdown-menu
-                  li
-                    a.btn.btn-default Edit
-                  li(ng-repeat="subreddit in subreddits")
-                    a(tabindex='-1', ng-href="/{{ subreddit }}") {{ subreddit }}
+                  li(ng-repeat="p in places")
+                    a(tabindex='-1', ng-href="{{ p.path }}") {{ p.name }}
     .container.main(ng-view)
     //bower:js
     //endbower
