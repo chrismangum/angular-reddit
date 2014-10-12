@@ -2,12 +2,14 @@ app = angular.module 'app', ['ngRoute', 'ngSanitize']
 
 app.config ['$routeProvider', '$locationProvider'
   ($routeProvider, $locationProvider) ->
-    $routeProvider.when '/r/:subreddit',
-      templateUrl: '/static/template.html'
-      controller: 'tmpCtrl'
-    $routeProvider.when '/r/:subreddit/comments/:thread/:title',
-      templateUrl: '/static/template.html'
-      controller: 'tmpCtrl'
+    $routeProvider
+      .when '/r/:subreddit',
+        templateUrl: '/static/template.html'
+        controller: 'tmpCtrl'
+      .when '/r/:subreddit/comments/:thread/:title',
+        templateUrl: '/static/template.html'
+        controller: 'tmpCtrl'
+      .otherwise redirectTo: '/r/all'
     $locationProvider.html5Mode true
 ]
 
