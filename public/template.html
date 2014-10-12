@@ -30,7 +30,7 @@
       <ng-pluralize count="c.score" when="{one: '1 point', other: '{} points'}"></ng-pluralize> &bull;
       <span ng-bind="c.created_utc | timeago"></span>
     </div>
-    <div ng-if="show">
+    <div ng-show="show">
       <div class="description" ng-bind-html="c.body_html"></div>
       <a ng-if="c.more" ng-click="c.more = false">Load more comments...</a>
       <div ng-if="c.replies.length && !c.more" ng-include="'tree_comment.html'" ng-init="comments = c.replies"></div>

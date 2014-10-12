@@ -12,7 +12,7 @@ app.config ($routeProvider, $locationProvider) ->
   $locationProvider.html5Mode true
 
 
-app.controller 'mainCtrl', ($scope, $document) ->
+app.controller 'rootCtrl', ($scope, $document) ->
   $scope.updateTitle = (title) ->
     $document[0].title = title
 
@@ -62,11 +62,10 @@ app.factory '$reddit', ($http, $routeParams) ->
 
   buildUrl = ->
     params = _.extend limit: 500, $routeParams
-    url = "http://www.reddit.com/r/#{ params.subreddit }/"
-    url += "comments/#{ params.id }/" if params.id
+    url = "http://www.reddit.com/r/#{params.subreddit}/"
+    url += "comments/#{params.id}/" if params.id
     url += params.sort if params.sort
-    params = _.omit params, 'subreddit', 'id'
-    url + '.json?' + $.param params
+    "#{url}.json?#{$.param _.omit params, 'subreddit', 'id'}"
 
   getData: ->
     $http.get(buildUrl()).then (res) ->
