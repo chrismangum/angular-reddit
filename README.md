@@ -1,6 +1,6 @@
-angular-reddit
+Hacker News / Reddit Browser
 ==============
 
-Reddit browser written in AngularJS.
-
-Demo: http://enigmatic-waters-9491.herokuapp.com/r/all
+<!---
+Demo: http://hn-rdt.chrismangum.me
+-->
