@@ -1,6 +1,5 @@
 _ = window._
 
-#controllers
 RootCtrl = ($scope, $document) ->
   $scope.updateTitle = (title) ->
     $document[0].title = title
@@ -26,6 +25,8 @@ RootCtrl = ($scope, $document) ->
   $scope.$on '$stateChangeSuccess', ->
     $scope.loading = false
 
+
+#HN Controllers:
 Home = ($scope, stories) ->
   $scope.updateTitle 'Hacker News'
   @posts = stories
@@ -46,6 +47,8 @@ Story.resolve =
   story: ($hn, $stateParams) ->
     $hn.getStory $stateParams.id
 
+
+#Reddit Controllers:
 Subreddit = ($scope, data) ->
   $scope.updateTitle data.posts[0].subreddit
   @posts = data.posts
@@ -67,7 +70,7 @@ Thread.resolve =
     $rdt.getData $stateParams
 
 
-#services
+#Services
 $hn = ($firebase, $q) ->
   baseUrl = 'https://hacker-news.firebaseio.com/v0'
   getFb = (url) -> $firebase new Firebase url
@@ -127,12 +130,12 @@ $rdt = ($http) ->
         comments: []
 
 
-#filters
+#Filters
 timeago =  -> (timestamp) ->
   moment(timestamp * 1000).fromNow()
 
 
-#config
+#Config / States
 config = ($stateProvider, $urlRouterProvider, $locationProvider) ->
   $urlRouterProvider.otherwise '/'
   $stateProvider
@@ -163,7 +166,7 @@ config = ($stateProvider, $urlRouterProvider, $locationProvider) ->
   $locationProvider.html5Mode true
 
 
-#angular
+#Angular
 angular
   .module 'app', ['ui.router', 'ngSanitize', 'firebase']
   .config config
