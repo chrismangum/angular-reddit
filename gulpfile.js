@@ -12,10 +12,13 @@ var paths = {
   index: 'public/index.jade'
 };
 
-gulp.task('scripts', function () {
+gulp.task('clientJS', function () {
   gulp.src(paths.clientJS)
     .pipe(plugin.coffee())
     .pipe(gulp.dest('public/js'));
+});
+
+gulp.task('serverJS', function () {
   gulp.src(paths.serverJS)
     .pipe(plugin.coffee())
     .pipe(gulp.dest('server'));
@@ -62,18 +65,20 @@ gulp.task('wiredep', function () {
 gulp.task('nodemon', function () {
   plugin.nodemon({
     script: 'server/app.js',
-    ext: 'coffee',
+    ext: 'js',
     ignore: ['public/**', 'node_modules/**']
   });
 });
 
 gulp.task('watch', function () {
-  gulp.watch(paths.js, ['scripts']);
+  gulp.watch(paths.clientJS, ['clientJS']);
+  gulp.watch(paths.serverJS, ['serverJS']);
   gulp.watch(paths.jade, ['jade']);
   gulp.watch(paths.stylus, ['stylus']);
   gulp.watch(paths.index, ['wiredep']);
 });
 
 gulp.task('views', ['jade', 'wiredep']);
+gulp.task('scripts', ['clientJS', 'serverJS']);
 gulp.task('default', ['scripts', 'views', 'stylus', 'watch', 'nodemon']);
 gulp.task('heroku:development', ['scripts', 'views', 'stylus']);
