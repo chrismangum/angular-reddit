@@ -1,49 +1,7 @@
-app = angular.module 'app', ['ui.router', 'ngSanitize', 'firebase']
+_ = window._
 
-app.config ($stateProvider, $urlRouterProvider, $locationProvider) ->
-  $urlRouterProvider.otherwise '/'
-  $stateProvider
-    .state 'home',
-      url: '/'
-      templateUrl: '/static/hn-template.html'
-      controller: ($scope, stories) ->
-        $scope.updateTitle 'Hacker News'
-        $scope.posts = stories
-        $scope.comments = []
-      resolve: stories: ($hn) ->
-        $hn.getTopStories()
-    .state 'story',
-      url: '/:id'
-      templateUrl: '/static/hn-template.html'
-      controller: ($scope, story) ->
-        $scope.updateTitle story.title
-        $scope.posts = [story]
-        $scope.comments = story.kids
-      resolve: story: ($hn, $stateParams) ->
-        $hn.getStory $stateParams.id
-    .state 'subreddit',
-      url: '/r/:subreddit'
-      templateUrl: '/static/rdt-template.html'
-      controller: ($scope, data) ->
-        $scope.updateTitle data.posts[0].subreddit
-        $scope.posts = data.posts
-        $scope.comments = data.comments
-      resolve: data: ($rdt, $stateParams) ->
-        $rdt.getData $stateParams
-    .state 'thread',
-      url: '/r/:subreddit/:id'
-      templateUrl: '/static/rdt-template.html'
-      controller: ($scope, data) ->
-        $scope.updateTitle data.posts[0].title
-        $scope.posts = data.posts
-        $scope.comments = data.comments
-      resolve: data: ($rdt, $stateParams) ->
-        $rdt.getData $stateParams
-    # .otherwise redirectTo: '/'
-  $locationProvider.html5Mode true
-
-
-app.controller 'rootCtrl', ($scope, $document) ->
+#controllers
+RootCtrl = ($scope, $document) ->
   $scope.updateTitle = (title) ->
     $document[0].title = title
 
@@ -68,8 +26,49 @@ app.controller 'rootCtrl', ($scope, $document) ->
   $scope.$on '$stateChangeSuccess', ->
     $scope.loading = false
 
+Home = ($scope, stories) ->
+  $scope.updateTitle 'Hacker News'
+  @posts = stories
+  @comments = []
+  return
 
-app.factory '$hn', ($firebase, $q) ->
+Home.resolve =
+  stories: ($hn) ->
+    $hn.getTopStories()
+
+Story = ($scope, story) ->
+  $scope.updateTitle story.title
+  @posts = [story]
+  @comments = story.kids
+  return
+
+Story.resolve =
+  story: ($hn, $stateParams) ->
+    $hn.getStory $stateParams.id
+
+Subreddit = ($scope, data) ->
+  $scope.updateTitle data.posts[0].subreddit
+  @posts = data.posts
+  @comments = data.comments
+  return
+
+Subreddit.resolve =
+  data: ($rdt, $stateParams) ->
+    $rdt.getData $stateParams
+
+Thread = ($scope, data) ->
+  $scope.updateTitle data.posts[0].title
+  @posts = data.posts
+  @comments = data.comments
+  return
+
+Thread.resolve =
+  data: ($rdt, $stateParams) ->
+    $rdt.getData $stateParams
+
+
+#services
+$hn = ($firebase, $q) ->
   baseUrl = 'https://hacker-news.firebaseio.com/v0'
   getFb = (url) -> $firebase new Firebase url
 
@@ -90,8 +89,7 @@ app.factory '$hn', ($firebase, $q) ->
     getFb(baseUrl + '/topstories').$asArray().$loaded().then (data) =>
       $q.all _.map _.pluck(data, '$value'), getItem
 
-
-app.factory '$rdt', ($http) ->
+$rdt = ($http) ->
   parseComments = (data, level = 1) ->
     for c in data.data.children
       if c.kind is 'more'
@@ -129,5 +127,51 @@ app.factory '$rdt', ($http) ->
         comments: []
 
 
-app.filter 'timeago', -> (timestamp) ->
+#filters
+timeago =  -> (timestamp) ->
   moment(timestamp * 1000).fromNow()
+
+
+#config
+config = ($stateProvider, $urlRouterProvider, $locationProvider) ->
+  $urlRouterProvider.otherwise '/'
+  $stateProvider
+    .state 'Home',
+      url: '/'
+      templateUrl: '/static/hn-template.html'
+      controller: 'Home'
+      controllerAs: 'vm'
+      resolve: Home.resolve
+    .state 'Story',
+      url: '/:id'
+      templateUrl: '/static/hn-template.html'
+      controller: 'Story'
+      controllerAs: 'vm'
+      resolve: Story.resolve
+    .state 'Subreddit',
+      url: '/r/:subreddit'
+      templateUrl: '/static/rdt-template.html'
+      controller: 'Subreddit'
+      controllerAs: 'vm'
+      resolve: Subreddit.resolve
+    .state 'Thread',
+      url: '/r/:subreddit/:id'
+      templateUrl: '/static/rdt-template.html'
+      controller: 'Thread'
+      controllerAs: 'vm'
+      resolve: Thread.resolve
+  $locationProvider.html5Mode true
+
+
+#angular
+app = angular
+  .module 'app', ['ui.router', 'ngSanitize', 'firebase']
+  .config config
+  .controller 'Home', Home
+  .controller 'Story', Story
+  .controller 'Thread', Thread
+  .controller 'Subreddit', Subreddit
+  .controller 'RootCtrl', RootCtrl
+  .factory '$hn', $hn
+  .factory '$rdt', $rdt
+  .filter 'timeago', timeago
