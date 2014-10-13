@@ -4,32 +4,36 @@ app.config ($routeProvider, $locationProvider) ->
   $routeProvider
     .when '/',
       templateUrl: '/static/hn-template.html'
-      controller: ($scope, $hn) ->
+      controller: ($scope, stories) ->
         $scope.updateTitle 'Hacker News'
-        $hn.getTopStories().then (stories) ->
-          $scope.posts = stories
-          $scope.comments = []
+        $scope.posts = stories
+        $scope.comments = []
+      resolve: stories: ($hn) ->
+        $hn.getTopStories()
     .when '/:id',
       templateUrl: '/static/hn-template.html'
-      controller: ($scope, $hn, $routeParams) ->
-        $hn.getStory($routeParams.id).then (story) ->
-          $scope.updateTitle story.title
-          $scope.posts = [story]
-          $scope.comments = story.kids
+      controller: ($scope, story) ->
+        $scope.updateTitle story.title
+        $scope.posts = [story]
+        $scope.comments = story.kids
+      resolve: story: ($hn, $route) ->
+        $hn.getStory $route.current.params.id
     .when '/r/:subreddit',
       templateUrl: '/static/rdt-template.html'
-      controller: ($scope, $rdt) ->
-        $rdt.getData().then ({posts, comments}) ->
-          $scope.updateTitle posts[0].subreddit
-          $scope.posts = posts
-          $scope.comments = comments
+      controller: ($scope, rdtData) ->
+        $scope.updateTitle rdtData.posts[0].subreddit
+        $scope.posts = rdtData.posts
+        $scope.comments = rdtData.comments
+      resolve: rdtData: ($rdt, $route) ->
+        $rdt.getData $route.current.params
     .when '/r/:subreddit/:id',
       templateUrl: '/static/rdt-template.html'
-      controller: ($scope, $rdt) ->
-        $rdt.getData().then ({posts, comments}) ->
-          $scope.updateTitle posts[0].title
-          $scope.posts = posts
-          $scope.comments = comments
+      controller: ($scope, rdtData) ->
+        $scope.updateTitle rdtData.posts[0].title
+        $scope.posts = rdtData.posts
+        $scope.comments = rdtData.comments
+      resolve: rdtData: ($rdt, $route) ->
+        $rdt.getData $route.current.params
     .otherwise redirectTo: '/'
   $locationProvider.html5Mode true
 
@@ -51,6 +55,13 @@ app.controller 'rootCtrl', ($scope, $document) ->
     $scope.themeName = $scope.themes[index]
 
   $scope.setTheme localStorage.theme
+
+  #loading indicator
+  $scope.loading = true
+  $scope.$on '$routeChangeStart', ->
+    $scope.loading = true
+  $scope.$on '$routeChangeSuccess', ->
+    $scope.loading = false
 
 
 app.factory '$hn', ($firebase, $q) ->
@@ -75,7 +86,7 @@ app.factory '$hn', ($firebase, $q) ->
       $q.all _.map _.pluck(data, '$value'), getItem
 
 
-app.factory '$rdt', ($http, $routeParams) ->
+app.factory '$rdt', ($http) ->
   parseComments = (data, level = 1) ->
     for c in data.data.children
       if c.kind is 'more'
@@ -95,16 +106,16 @@ app.factory '$rdt', ($http, $routeParams) ->
       post.selftext_html = _.unescape post.selftext_html
       post
 
-  buildUrl = ->
-    params = _.extend limit: 500, $routeParams
+  buildUrl = (params) ->
+    params = _.extend limit: 500, params
     url = "http://www.reddit.com/r/#{params.subreddit}/"
     url += "comments/#{params.id}/" if params.id
     url += params.sort if params.sort
     "#{url}.json?#{$.param _.omit params, 'subreddit', 'id'}"
 
-  getData: ->
-    $http.get(buildUrl()).then (res) ->
-      if $routeParams.id
+  getData: (params) ->
+    $http.get(buildUrl(params)).then (res) ->
+      if params.id
         posts: parsePosts res.data[0]
         comments: parseComments res.data[1]
       else
