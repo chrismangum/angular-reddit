@@ -164,7 +164,7 @@ config = ($stateProvider, $urlRouterProvider, $locationProvider) ->
 
 
 #angular
-app = angular
+angular
   .module 'app', ['ui.router', 'ngSanitize', 'firebase']
   .config config
   .controller 'Home', Home
