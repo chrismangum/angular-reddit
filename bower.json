@@ -14,12 +14,12 @@
     "tests"
   ],
   "dependencies": {
-    "angular-route": "~1.2.3",
     "angular-sanitize": "~1.2.21",
     "bootstrap": "~3.0.2",
     "lodash": "~2.4.1",
     "momentjs": "~2.4.0",
     "angularfire": "~0.8.2",
-    "angular": "~1.2.26"
+    "angular": "~1.2.26",
+    "angular-ui-router": "~0.2.11"
   }
 }

@@ -31,7 +31,10 @@ html(ng-app="app", ng-controller="rootCtrl")
                 ul.dropdown-menu
                   li(ng-repeat="p in places")
                     a(tabindex='-1', ng-href="{{ p.path }}") {{ p.name }}
-    .container.main(ng-view)
+    .container.main
+      .loading(ng-show="loading")
+        img(src="/static/images/loading.gif")
+      div(ui-view, ng-show="!loading")
     //bower:js
     //endbower
     script(src="/static/js/app.js")

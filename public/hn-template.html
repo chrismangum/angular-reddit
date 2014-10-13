@@ -1,7 +1,4 @@
-<div class="loading" ng-if="loading">
-  <img src="/static/images/loading.gif">
-</div>
-<div class="row" ng-if="!loading">
+<div class="row">
   <table class="posts">
     <tr class="post" ng-repeat="post in posts">
       <td class="aright" ng-bind="post.score"></td>

@@ -1,8 +1,10 @@
-app = angular.module 'app', ['ngRoute', 'ngSanitize', 'firebase']
+app = angular.module 'app', ['ui.router', 'ngSanitize', 'firebase']
 
-app.config ($routeProvider, $locationProvider) ->
-  $routeProvider
-    .when '/',
+app.config ($stateProvider, $urlRouterProvider, $locationProvider) ->
+  $urlRouterProvider.otherwise '/'
+  $stateProvider
+    .state 'home',
+      url: '/'
       templateUrl: '/static/hn-template.html'
       controller: ($scope, stories) ->
         $scope.updateTitle 'Hacker News'
@@ -10,31 +12,34 @@ app.config ($routeProvider, $locationProvider) ->
         $scope.comments = []
       resolve: stories: ($hn) ->
         $hn.getTopStories()
-    .when '/:id',
+    .state 'story',
+      url: '/:id'
       templateUrl: '/static/hn-template.html'
       controller: ($scope, story) ->
         $scope.updateTitle story.title
         $scope.posts = [story]
         $scope.comments = story.kids
-      resolve: story: ($hn, $route) ->
-        $hn.getStory $route.current.params.id
-    .when '/r/:subreddit',
+      resolve: story: ($hn, $stateParams) ->
+        $hn.getStory $stateParams.id
+    .state 'subreddit',
+      url: '/r/:subreddit'
       templateUrl: '/static/rdt-template.html'
-      controller: ($scope, rdtData) ->
-        $scope.updateTitle rdtData.posts[0].subreddit
-        $scope.posts = rdtData.posts
-        $scope.comments = rdtData.comments
-      resolve: rdtData: ($rdt, $route) ->
-        $rdt.getData $route.current.params
-    .when '/r/:subreddit/:id',
+      controller: ($scope, data) ->
+        $scope.updateTitle data.posts[0].subreddit
+        $scope.posts = data.posts
+        $scope.comments = data.comments
+      resolve: data: ($rdt, $stateParams) ->
+        $rdt.getData $stateParams
+    .state 'thread',
+      url: '/r/:subreddit/:id'
       templateUrl: '/static/rdt-template.html'
-      controller: ($scope, rdtData) ->
-        $scope.updateTitle rdtData.posts[0].title
-        $scope.posts = rdtData.posts
-        $scope.comments = rdtData.comments
-      resolve: rdtData: ($rdt, $route) ->
-        $rdt.getData $route.current.params
-    .otherwise redirectTo: '/'
+      controller: ($scope, data) ->
+        $scope.updateTitle data.posts[0].title
+        $scope.posts = data.posts
+        $scope.comments = data.comments
+      resolve: data: ($rdt, $stateParams) ->
+        $rdt.getData $stateParams
+    # .otherwise redirectTo: '/'
   $locationProvider.html5Mode true
 
 
@@ -58,9 +63,9 @@ app.controller 'rootCtrl', ($scope, $document) ->
 
   #loading indicator
   $scope.loading = true
-  $scope.$on '$routeChangeStart', ->
+  $scope.$on '$stateChangeStart', ->
     $scope.loading = true
-  $scope.$on '$routeChangeSuccess', ->
+  $scope.$on '$stateChangeSuccess', ->
     $scope.loading = false
 
 
@@ -95,9 +100,10 @@ app.factory '$rdt', ($http) ->
       c.score = c.ups - c.downs
       c.body_html = _.unescape c.body_html
       if c.replies
-        if level is 9
+        if level is 8
           c.more = true
-        c.replies = parseComments c.replies, level + 1
+        else
+          c.replies = parseComments c.replies, level + 1
       c
 
   parsePosts = (data) ->
