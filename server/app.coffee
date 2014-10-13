@@ -7,4 +7,4 @@ app.use '/static', express.static 'public'
 app.get '*', (req, res) ->
   res.sendfile 'public/index.html'
 
-http.createServer(app).listen 3000
+http.createServer(app).listen process.env.PORT or 3000
