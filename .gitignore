@@ -1,6 +1,7 @@
 *.swp
 *.min.js
 public/js/*.js
+server/*.js
 public/css/*.css
 public/vendor
 public/index.html

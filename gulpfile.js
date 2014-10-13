@@ -5,17 +5,20 @@ var gulp = require('gulp'),
   wiredep = require('wiredep').stream;
 
 var paths = {
-  js: 'public/js/*.coffee',
+  clientJS: 'public/js/*.coffee',
+  serverJS: 'server/*.coffee',
   jade: 'views/*.jade',
   stylus: 'public/css/*.styl',
   index: 'public/index.jade'
 };
 
 gulp.task('scripts', function () {
-  gulp.src(paths.js)
+  gulp.src(paths.clientJS)
     .pipe(plugin.coffee())
-    //.pipe(plugin.uglify())
     .pipe(gulp.dest('public/js'));
+  gulp.src(paths.serverJS)
+    .pipe(plugin.coffee())
+    .pipe(gulp.dest('server'));
 });
 
 gulp.task('jade', function () {
@@ -58,8 +61,8 @@ gulp.task('wiredep', function () {
 
 gulp.task('nodemon', function () {
   plugin.nodemon({
-    script: 'server/app.coffee',
-    ext: 'js,coffee',
+    script: 'server/app.js',
+    ext: 'coffee',
     ignore: ['public/**', 'node_modules/**']
   });
 });
