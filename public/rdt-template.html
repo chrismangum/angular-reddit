@@ -15,8 +15,8 @@
       </td>
     </tr>
   </table>
-  <div ng-if="vm.comments.length" class="selftext" ng-bind-html="posts[0].selftext_html"></div>
-  <div ng-if="vm.comments.length" class="comments" ng-include="'tree_comment.html'" ng-class="{noSelfText: !posts[0].selftext_html.length}" ng-init="comments = vm.comments"></div>
+  <div ng-if="vm.comments.length" class="selftext" ng-bind-html="vm.posts[0].selftext_html"></div>
+  <div ng-if="vm.comments.length" class="comments" ng-include="'tree_comment.html'" ng-class="{noSelfText: !vm.posts[0].selftext_html.length}" ng-init="comments = vm.comments"></div>
 </div>
 
 <script type="text/ng-template"  id="tree_comment.html">
