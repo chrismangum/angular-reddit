@@ -152,13 +152,13 @@ config = ($stateProvider, $urlRouterProvider, $locationProvider) ->
       controllerAs: 'vm'
       resolve: Story.resolve
     .state 'Subreddit',
-      url: '/r/:subreddit'
+      url: '/r/:subreddit?sort&t'
       templateUrl: '/static/rdt-template.html'
       controller: 'Subreddit'
       controllerAs: 'vm'
       resolve: Subreddit.resolve
     .state 'Thread',
-      url: '/r/:subreddit/:id'
+      url: '/r/:subreddit/:id?sort&t'
       templateUrl: '/static/rdt-template.html'
       controller: 'Thread'
       controllerAs: 'vm'
