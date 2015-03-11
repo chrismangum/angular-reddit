@@ -90,6 +90,7 @@ $hn = ($firebase, $q) ->
   getStory: getItemRecursive
   getTopStories: ->
     getFb(baseUrl + '/topstories').$asArray().$loaded().then (data) =>
+      data = data.slice 0, 100
       $q.all _.map _.pluck(data, '$value'), getItem
 
 $rdt = ($http) ->
